@@ -1,0 +1,7 @@
+# rvm config
+/.ruby-version
+/.ruby-gemset
+
+# data
+/data
+/log
