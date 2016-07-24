@@ -43,4 +43,21 @@ describe Ams::Models::Artist do
     end
   end
 
+  describe 'validations:' do
+    it 'can be validated w/ errors' do
+      artist = described_class.new
+      expect(artist.valid?).to eq false
+      expect(artist.errors.keys).to include(:name, :url_part, :am_id)
+
+      artist.name = 'Radiohead'
+      expect(artist.valid?).to eq false
+      expect(artist.errors.keys).to include(:am_id, :url_part)
+      expect(artist.errors.keys).to_not include(:name)
+
+      artist.url_part = 'radiohead-mn0123456789'
+      expect(artist.valid?).to eq true
+      expect(artist.errors.empty?).to eq true
+    end
+  end
+
 end

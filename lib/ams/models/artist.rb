@@ -1,3 +1,5 @@
+require 'ams/schemas'
+
 module Ams
   module Models
     class Artist
@@ -17,6 +19,19 @@ module Ams
         end
       end
 
+      def valid?
+        validation.success?
+      end
+
+      def errors
+        validation.messages
+      end
+
+      private
+
+      def validation
+        Ams::Schemas::ArtistSchema.call(to_hash)
+      end
     end
   end
 end
