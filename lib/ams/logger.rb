@@ -5,6 +5,7 @@ require 'ams/constants'
 module Ams
   module Logger
     $ams_logger ||= ::Logger.new("#{Ams::Constants::APP_PATH}/log/data-retrieval.log")
+    $ams_logger.level = ::Logger::WARN
 
     def log level, msg
       $ams_logger.send level, "#{self.class.name} -- #{am_id}: #{msg}"
