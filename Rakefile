@@ -27,3 +27,7 @@ task :enqueue_artist do
   raise "requires an am_id as argument" if am_id.nil?
   sh "ruby -r ./lib/ams.rb -e \"Ams::Init.new(#{am_id}).relationships\""
 end
+
+task :clean_up_folder do
+  sh 'rm -rf log tmp'
+end
