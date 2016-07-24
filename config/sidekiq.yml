@@ -1,5 +1,9 @@
 ---
-:concurrency: 15
+:concurrency: 5
+production:
+  :concurrency: 30
+  :pidfile: tmp/pids/sidekiq.pid
+  :logfile: log/sidekiq.log
 :queues:
   - pulls_relationships
   - extracts_relationships
