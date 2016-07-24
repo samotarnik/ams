@@ -1,3 +1,4 @@
+require 'i18n' # otherwise dry-validation fails...
 require 'dry-validation'
 
 module Ams
