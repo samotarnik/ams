@@ -4,6 +4,7 @@ require 'sidekiq'
 
 require 'ams/helpers'
 require 'ams/logger'
+require 'ams/models/artist'
 require 'ams/workers/pulls_relationships'
 
 
@@ -67,24 +68,32 @@ module Ams
 
       def parse_and_extract html
         doc = Oga.parse_html html
-        # TODO: this should be a model !
+
         result = {}
 
-        result[:name] = doc.at_css('h1.artist-name').text.strip
-        url_part = doc.css('.content ul.tabs.related li a')
-          .select { |el| el.text.strip =~ /Overview/ }
-          .first.attr('href').value.split('/').last
-        result[:url_part] = url_part
-        result[:am_id] = url_part.split('-').last
+        artist = Ams::Models::Artist.new
+        artist.name = doc.at_css('h1.artist-name').text.strip
+        artist.url_part = doc.at_css('.content ul.tabs.related li.tab.related a')
+          .attr('href').value.strip.sub(/\/related\z/,'').split('/').last
+
+        if artist.valid?
+          result[:artist] = artist.to_hash
+        else
+          raise StandardError, artist.errors.to_s
+        end
 
         %i(similars influencers followers associatedwith).each do |section|
           result[section] = []
           doc.css("section.related.#{section} li a").each do |link|
-            name = link.text.strip
-            href = link.attr('href').value
-            url_part = href.split('/').last
-            am_id = url_part.split('-').last
-            result[section] << {name: name, am_id: am_id, url_part: url_part}
+            artist = Ams::Models::Artist.new
+            artist.name = link.text.strip
+            artist.url_part = link.attr('href').value.strip.split('/').last
+
+            if artist.valid?
+              result[section] << artist.to_hash
+            else
+              raise StandardError, artist.errors.to_s
+            end
           end
         end
 
